@@ -6,6 +6,7 @@ let optIndex = process.argv[3];
 let age;
 let kind;
 let name;
+let updatedPets;
 
 switch (option) {
   case "read":
@@ -25,14 +26,22 @@ switch (option) {
     age = process.argv[3];
     kind = process.argv[4];
     name = process.argv[5];
-    if (age !== undefined && kind !== undefined && name !== undefined) {
-      let obj = {};
-      obj.age = Number(age);
-      obj.kind = kind;
-      obj.name = name;
-    } else {
-      console.error(`Usage: node pets.js create AGE KIND NAME`);
-    }
+    fs.readFile("pets.json", "utf-8", (error, data) => {
+      pets = JSON.parse(data);
+      if (age !== undefined && kind !== undefined && name !== undefined) {
+        let obj = {};
+        obj.age = Number(age);
+        obj.kind = kind;
+        obj.name = name;
+        pets.push(obj);
+        updatedPets = JSON.stringify(pets);
+        fs.writeFile("pets.json", updatedPets, (error) => {
+          if (error) throw error;
+        });
+      } else {
+        console.error(`Usage: node pets.js create AGE KIND NAME`);
+      }
+    });
     break;
   case "update":
     age = process.argv[4];
@@ -66,7 +75,7 @@ switch (option) {
       pets = JSON.parse(data);
       if (optIndex !== undefined) {
         pets.splice(optIndex, 1);
-        let updatedPets = JSON.stringify(pets);
+        updatedPets = JSON.stringify(pets);
         fs.writeFile("pets.json", updatedPets, (error) => {
           if (error) throw error;
         });
