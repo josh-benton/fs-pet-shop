@@ -52,10 +52,10 @@ switch (option) {
         updateObj.kind = kind;
         updateObj.name = name;
         pets[optIndex] = updateObj;
-        let updatedPet = JSON.stringify(pets)
-        fs.writeFile('pets.json', updatedPet, (error) => {
-            if (error) throw error;
-        })
+        let updatedPet = JSON.stringify(pets);
+        fs.writeFile("pets.json", updatedPet, (error) => {
+          if (error) throw error;
+        });
       } else {
         console.error(`Usage: node pets.js update INDEX AGE KIND NAME`);
       }
@@ -63,11 +63,17 @@ switch (option) {
     break;
   case "destroy":
     fs.readFile("pets.json", "utf-8", (error, data) => {
-        pets = JSON.parse(data);
-        console.log(pets);
-
-    })
-  console.log("you selected destroy");
+      pets = JSON.parse(data);
+      if (optIndex !== undefined) {
+        pets.splice(optIndex, 1);
+        let updatedPets = JSON.stringify(pets);
+        fs.writeFile("pets.json", updatedPets, (error) => {
+          if (error) throw error;
+        });
+      } else {
+        console.error(`Usage: node pets.js destroy INDEX`);
+      }
+    });
     break;
   default:
     console.error(`Usage: node pets.js [read | create | update | destroy]`);
