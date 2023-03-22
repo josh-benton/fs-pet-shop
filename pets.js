@@ -52,13 +52,22 @@ switch (option) {
         updateObj.kind = kind;
         updateObj.name = name;
         pets[optIndex] = updateObj;
+        let updatedPet = JSON.stringify(pets)
+        fs.writeFile('pets.json', updatedPet, (error) => {
+            if (error) throw error;
+        })
       } else {
         console.error(`Usage: node pets.js update INDEX AGE KIND NAME`);
       }
     });
     break;
   case "destroy":
-    console.log("you selected destroy");
+    fs.readFile("pets.json", "utf-8", (error, data) => {
+        pets = JSON.parse(data);
+        console.log(pets);
+
+    })
+  console.log("you selected destroy");
     break;
   default:
     console.error(`Usage: node pets.js [read | create | update | destroy]`);
