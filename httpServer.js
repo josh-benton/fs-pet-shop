@@ -51,6 +51,44 @@ let server = http.createServer((req, res) => {
       return res.end("Not Found");
     }
   }
+
+  if (req.method === 'POST' && req.url === '/pets') {
+    let body = '';
+
+    req.on('data', chunk => {
+        body += chunk.toString();
+    })
+
+    req.on('end', () => {
+        const data = JSON.parse(body);
+
+        fs.readFile(petsPath, 'utf-8', (err, petsJSON) => {
+            if (err) {
+                console.error(err.stack);
+                res.statusCode = 500;
+                res.setHeader("Content-Type", "text/plain");
+                return res.end("internal Server Error");
+            }
+
+            pets = JSON.parse(petsJSON);
+
+            pets.push(data);
+
+            fs.writeFile(petsPath, JSON.stringify(pets), err => {
+                if (err) {
+                    console.error(err.stack);
+                    res.statusCode = 500;
+                    res.setHeader("Content-Type", "text/plain");
+                    return res.end("Internal Server Error");
+                }
+
+                res.statusCode = 200;
+                res.setHeader("Content-Type", "application/json");
+                res.end(JSON.stringify(data));
+            })
+        })
+    })
+  }
 });
 
 server.listen(port, () => {
