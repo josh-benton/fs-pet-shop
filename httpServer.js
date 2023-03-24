@@ -52,43 +52,54 @@ let server = http.createServer((req, res) => {
     }
   }
 
-  if (req.method === 'POST' && req.url === '/pets') {
-    let body = '';
+  //   if (req.method === "POST" && req.url === "/pets") {
+  //     let body = "";
 
-    req.on('data', chunk => {
-        body += chunk.toString();
-    })
+  //     req.on("data", (chunk) => {
+  //       body += chunk.toString();
+  //     });
 
-    req.on('end', () => {
-        const data = JSON.parse(body);
+  //     req.on("end", () => {
+  //       const data = JSON.parse(body);
 
-        fs.readFile(petsPath, 'utf-8', (err, petsJSON) => {
-            if (err) {
-                console.error(err.stack);
-                res.statusCode = 500;
-                res.setHeader("Content-Type", "text/plain");
-                return res.end("internal Server Error");
-            }
+  //       if (
+  //         !data.hasOwnProperty("age") ||
+  //         !data.hasOwnProperty("kind") ||
+  //         !data.hasOwnProperty("name") ||
+  //         !Number.isInteger(data.age)
+  //       ) {
+  //         res.statusCode = 400;
+  //         res.setHeader("Content-Type", "text/plain");
+  //         return res.end("Bad Request");
+  //       }
 
-            pets = JSON.parse(petsJSON);
+  //       fs.readFile(petsPath, "utf-8", (err, petsJSON) => {
+  //         if (err) {
+  //           console.error(err.stack);
+  //           res.statusCode = 500;
+  //           res.setHeader("Content-Type", "text/plain");
+  //           return res.end("internal Server Error");
+  //         }
 
-            pets.push(data);
+  //         pets = JSON.parse(petsJSON);
 
-            fs.writeFile(petsPath, JSON.stringify(pets), err => {
-                if (err) {
-                    console.error(err.stack);
-                    res.statusCode = 500;
-                    res.setHeader("Content-Type", "text/plain");
-                    return res.end("Internal Server Error");
-                }
+  //         pets.push(data);
 
-                res.statusCode = 200;
-                res.setHeader("Content-Type", "application/json");
-                res.end(JSON.stringify(data));
-            })
-        })
-    })
-  }
+  //         fs.writeFile(petsPath, JSON.stringify(pets), (err) => {
+  //           if (err) {
+  //             console.error(err.stack);
+  //             res.statusCode = 500;
+  //             res.setHeader("Content-Type", "text/plain");
+  //             return res.end("Internal Server Error");
+  //           }
+
+  //           res.statusCode = 200;
+  //           res.setHeader("Content-Type", "application/json");
+  //           res.end(JSON.stringify(data));
+  //         });
+  //       });
+  //     });
+  //   }
 });
 
 server.listen(port, () => {
