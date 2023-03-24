@@ -39,27 +39,37 @@ app.use(bodyParser.json());
 
 app.post("/pets", (req, res, next) => {
   const petData = req.body;
-
+  if (
+    !petData.hasOwnProperty("age") ||
+    !petData.hasOwnProperty("kind") ||
+    !petData.hasOwnProperty("name")
+  ) {
+    res.status(400).send("Bad request: age, kind, or name missing");
+    return;
+  }
+  if (!Number.isInteger(petData.age)) {
+    res.status(400).send("Bad request: age must be an integer");
+    return;
+  }
   petData.age = parseInt(petData.age);
-
   fs.readFile(petsPath, "utf8", (err, petsJSON) => {
     if (err) {
       return next(err);
     }
-
     const pets = JSON.parse(petsJSON);
-
     pets.push(petData);
-
     fs.writeFile(petsPath, JSON.stringify(pets), "utf8", (err) => {
       if (err) {
         return next(err);
       }
-
       res.status(201).send("Pet created");
     });
   });
 });
+
+app.get('*', (req, res) => {
+  res.status(404).send('404 Not Found');
+})
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
