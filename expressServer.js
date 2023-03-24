@@ -1,9 +1,8 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const fs = require("fs");
 const path = require("path");
-// const petRegExp = /^\/pets\/(\d+)$/;
 const petRegExp = /^\/pets\/(-?\d+)$/;
-
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -24,15 +23,41 @@ app.get(petRegExp, (req, res, next) => {
       next(err);
     } else {
       const pets = JSON.parse(petsJSON);
-      console.log('index:', index);
-      console.log('pets length:', pets.length);
+      console.log("index:", index);
+      console.log("pets length:", pets.length);
       if (index < 0 || index >= pets.length) {
-        console.log('sending 404 response...')
+        console.log("sending 404 response...");
         res.status(404).send("Not Found");
       } else {
         res.json(pets[index]);
       }
     }
+  });
+});
+
+app.use(bodyParser.json());
+
+app.post("/pets", (req, res, next) => {
+  const petData = req.body;
+
+  petData.age = parseInt(petData.age);
+
+  fs.readFile(petsPath, "utf8", (err, petsJSON) => {
+    if (err) {
+      return next(err);
+    }
+
+    const pets = JSON.parse(petsJSON);
+
+    pets.push(petData);
+
+    fs.writeFile(petsPath, JSON.stringify(pets), "utf8", (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      res.status(201).send("Pet created");
+    });
   });
 });
 
